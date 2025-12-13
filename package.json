@@ -1,18 +1,22 @@
 {
-  "name": "safetyagent-ai",
+  "name": "pwt-safety-ai",
+  "homepage": "https://github.io/mohtasham-kali/PWT-Safety-AI/",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
-    "react": "^19.2.3",
-    "react-dom": "^19.2.3",
     "@google/genai": "^1.33.0",
-    "lucide-react": "^0.561.0"
+    "gh-pages": "^6.3.0",
+    "lucide-react": "^0.561.0",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
