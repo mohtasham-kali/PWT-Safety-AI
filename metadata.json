@@ -1,5 +1,0 @@
-{
-  "name": "SafetyAgent AI",
-  "description": "An agentic AI Permit-to-Work system. Generates safety permits from natural language, runs compliance checks, and manages supervisor approvals.",
-  "requestFramePermissions": []
-}
