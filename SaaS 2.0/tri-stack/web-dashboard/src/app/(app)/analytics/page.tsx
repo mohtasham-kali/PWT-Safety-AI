@@ -110,7 +110,7 @@ export default function AnalyticsPage() {
       </div>
 
       {/* Stats Row */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {[
           { label: "Total Points", value: stats?.total_points?.toLocaleString() || "0", icon: Activity, color: "text-purple-400" },
           { label: "Rank", value: stats?.rank_estimate || "Calculating...", icon: CheckCircle, color: "text-emerald-400" },

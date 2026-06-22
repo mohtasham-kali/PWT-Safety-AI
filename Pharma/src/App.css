@@ -1,0 +1,14 @@
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.main-content {
+  flex: 1;
+  margin-left: 260px; /* matches sidebar width */
+  padding: 2rem;
+  max-width: calc(100% - 260px);
+  overflow-y: auto;
+  height: 100vh;
+}

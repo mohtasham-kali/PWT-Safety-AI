@@ -11,7 +11,16 @@ export class BotsController {
   }
 
   @Post(':id/execute')
-  execute(@Param('id') id: string, @Body('prompt') prompt: string) {
-    return this.botsService.executeBot(id, prompt);
+  execute(
+    @Param('id') id: string, 
+    @Body('prompt') prompt: string,
+    @Body('context') context?: string
+  ) {
+    return this.botsService.executeBot(id, prompt, context);
+  }
+
+  @Post('seed')
+  seed() {
+    return this.botsService.seed();
   }
 }

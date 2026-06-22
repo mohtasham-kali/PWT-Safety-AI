@@ -1,15 +1,17 @@
 "use client";
 
-import { Bot, Sparkles, MessageSquare, Loader2, Play, Terminal } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Bot, Sparkles, MessageSquare, Loader2, Play, Terminal, Upload, File, X as CloseIcon } from "lucide-react";
+import { useEffect, useState, useRef } from "react";
 import { fetchBots, executeBot } from "@/lib/api";
 
 export default function GeneralBotsPage() {
   const [bots, setBots] = useState<any[]>([]);
   const [selectedBot, setSelectedBot] = useState<any>(null);
   const [userPrompt, setUserPrompt] = useState("");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [executing, setExecuting] = useState<string | null>(null);
   const [result, setResult] = useState<any>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     async function loadBots() {
@@ -30,13 +32,34 @@ export default function GeneralBotsPage() {
     setExecuting(selectedBot.id);
     setResult(null);
     try {
-      const data = await executeBot(selectedBot.id, userPrompt);
+      let fileContext = "";
+      if (selectedFile) {
+        fileContext = await new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onload = (e) => resolve(e.target?.result as string);
+          reader.readAsText(selectedFile);
+        });
+      }
+      const data = await executeBot(selectedBot.id, userPrompt, fileContext);
       setResult({ ...data, forBot: selectedBot.name });
     } catch (e) {
       console.error(e);
     } finally {
       setExecuting(null);
     }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setSelectedFile(e.target.files[0]);
+    }
+  };
+
+  const clearSelection = () => {
+    setSelectedBot(null);
+    setResult(null);
+    setSelectedFile(null);
+    setUserPrompt("");
   };
 
   return (
@@ -53,32 +76,48 @@ export default function GeneralBotsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Selection Sidebar */}
         <div className="lg:col-span-1 space-y-4">
-          <h3 className="text-sm font-bold text-slate-500 uppercase tracking-widest px-2">Available Models</h3>
-          <div className="grid grid-cols-1 gap-3">
-            {bots.map((bot, i) => (
-              <button 
-                key={i} 
-                onClick={() => setSelectedBot(bot)}
-                className={`p-4 rounded-xl border text-left transition-all group relative overflow-hidden ${
-                  selectedBot?.id === bot.id 
-                    ? 'bg-blue-600/10 border-blue-500/50 shadow-lg shadow-blue-500/10' 
-                    : 'bg-slate-900/50 border-white/5 hover:border-white/20'
-                }`}
-              >
-                <div className="flex items-center gap-4">
-                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                    selectedBot?.id === bot.id ? 'bg-blue-500 text-white' : 'bg-slate-800 text-slate-400'
-                  }`}>
-                    <Bot className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h4 className={`font-bold text-sm ${selectedBot?.id === bot.id ? 'text-blue-400' : 'text-slate-200'}`}>
-                      {bot.name}
-                    </h4>
-                    <p className="text-[10px] text-slate-500 uppercase tracking-tighter">Latency: 120ms</p>
-                  </div>
+          <div className="space-y-6">
+            {Object.entries(
+              bots.reduce((acc: any, bot) => {
+                const category = bot.category || 'Other';
+                if (!acc[category]) acc[category] = [];
+                acc[category].push(bot);
+                return acc;
+              }, {})
+            ).map(([category, items]: [string, any]) => (
+              <div key={category} className="space-y-3">
+                <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] px-2 flex items-center gap-2">
+                  <span className="w-1 h-1 rounded-full bg-blue-500" />
+                  {category}
+                </h3>
+                <div className="grid grid-cols-1 gap-2">
+                  {items.map((bot: any, i: number) => (
+                    <button 
+                      key={i} 
+                      onClick={() => { setSelectedBot(bot); setResult(null); setSelectedFile(null); }}
+                      className={`p-3 rounded-xl border text-left transition-all group relative overflow-hidden ${
+                        selectedBot?.id === bot.id 
+                          ? 'bg-blue-600/10 border-blue-500/50 shadow-lg shadow-blue-500/10' 
+                          : 'bg-slate-900/50 border-white/5 hover:border-white/20'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
+                          selectedBot?.id === bot.id ? 'bg-blue-500 text-white' : 'bg-slate-800 text-slate-400 group-hover:bg-slate-700'
+                        }`}>
+                          <Bot className="w-4 h-4" />
+                        </div>
+                        <div className="min-w-0">
+                          <h4 className={`font-bold text-xs truncate ${selectedBot?.id === bot.id ? 'text-blue-400' : 'text-slate-200'}`}>
+                            {bot.name}
+                          </h4>
+                          <p className="text-[9px] text-slate-500 uppercase tracking-tighter truncate">Latency: 120ms</p>
+                        </div>
+                      </div>
+                    </button>
+                  ))}
                 </div>
-              </button>
+              </div>
             ))}
           </div>
         </div>
@@ -115,7 +154,7 @@ export default function GeneralBotsPage() {
                     <span className="text-xs font-mono text-slate-400">READY: {selectedBot.name}</span>
                   </div>
                   <button 
-                    onClick={() => { setSelectedBot(null); setResult(null); }}
+                    onClick={clearSelection}
                     className="text-xs text-slate-500 hover:text-white transition-colors"
                   >
                     Clear Lab
@@ -127,14 +166,53 @@ export default function GeneralBotsPage() {
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">Input Task / Code</label>
-                      <span className="text-[10px] text-slate-600 font-mono">MD SUPPORTED</span>
+                      <div className="flex items-center gap-4">
+                        {selectedBot.name !== 'Text to Code' && (
+                          <button 
+                            onClick={() => fileInputRef.current?.click()}
+                            className="text-[10px] font-bold text-blue-400 hover:text-blue-300 flex items-center gap-1.5 transition-colors uppercase tracking-widest bg-blue-500/5 px-2.5 py-1 rounded-md border border-blue-500/20"
+                          >
+                            <Upload className="w-3 h-3" />
+                            Upload Context
+                          </button>
+                        )}
+                        <span className="text-[10px] text-slate-600 font-mono">MD SUPPORTED</span>
+                      </div>
+                      <input 
+                        type="file"
+                        className="hidden"
+                        ref={fileInputRef}
+                        onChange={handleFileChange}
+                      />
                     </div>
-                    <textarea 
-                      value={userPrompt}
-                      onChange={(e) => setUserPrompt(e.target.value)}
-                      placeholder="Describe the task or paste the code snippet you want the bot to analyze..."
-                      className="w-full h-40 bg-slate-950/50 border border-white/10 rounded-xl p-4 text-slate-300 font-mono text-sm outline-none focus:border-blue-500/50 transition-all resize-none placeholder:text-slate-700"
-                    />
+                    
+                    <div className="relative group/textarea">
+                      <textarea 
+                        value={userPrompt}
+                        onChange={(e) => setUserPrompt(e.target.value)}
+                        placeholder="Describe the task or paste the code snippet you want the bot to analyze..."
+                        className="w-full h-40 bg-slate-950/50 border border-white/10 rounded-xl p-4 text-slate-300 font-mono text-sm outline-none focus:border-blue-500/50 transition-all resize-none placeholder:text-slate-700"
+                      />
+                      
+                      {/* File Attachment Feedback */}
+                      {selectedFile && (
+                        <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between bg-slate-950/90 border border-emerald-500/30 rounded-lg px-4 py-2 animate-in slide-in-from-bottom-2 duration-300">
+                          <div className="flex items-center gap-3 overflow-hidden">
+                            <div className="p-1.5 rounded-md bg-emerald-500/10">
+                              <File className="w-3.5 h-3.5 text-emerald-400" />
+                            </div>
+                            <span className="text-xs text-slate-300 truncate font-mono">{selectedFile.name}</span>
+                          </div>
+                          <button 
+                            onClick={() => setSelectedFile(null)}
+                            className="p-1 text-slate-500 hover:text-red-400 transition-colors"
+                          >
+                            <CloseIcon className="w-4 h-4" />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
                     <button 
                       onClick={handleLaunch}
                       disabled={!userPrompt.trim() || !!executing}

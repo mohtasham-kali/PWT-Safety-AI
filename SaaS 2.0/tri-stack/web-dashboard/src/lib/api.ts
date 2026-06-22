@@ -27,11 +27,11 @@ export async function likePost(postId: string) {
   return res.json();
 }
 
-export async function executeBot(id: string, prompt: string) {
+export async function executeBot(id: string, prompt: string, context?: string) {
   const res = await fetch(`${API_BASE_URL}/bots/${id}/execute`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ prompt }),
+    body: JSON.stringify({ prompt, context }),
   });
   return res.json();
 }

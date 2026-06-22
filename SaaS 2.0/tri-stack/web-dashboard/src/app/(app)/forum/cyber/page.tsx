@@ -4,6 +4,7 @@ import { PostCard } from "@/components/forum/PostCard";
 import { Search, Plus, Filter, ShieldCheck, Loader2 } from "lucide-react";
 import { useEffect, useState, useCallback } from "react";
 import { fetchPosts } from "@/lib/api";
+import { cn } from "@/lib/utils";
 import { CreatePostModal } from "@/components/forum/CreatePostModal";
 
 export default function CyberForumPage() {
@@ -36,17 +37,17 @@ export default function CyberForumPage() {
         onSuccess={loadPosts}
       />
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-3">
             Security Hub
             <ShieldCheck className="w-8 h-8 text-emerald-500" />
           </h1>
-          <p className="text-slate-400">Exclusive discussions on vulnerabilities, pentesting, and forensics.</p>
+          <p className="text-slate-400 text-sm">Exclusive discussions on vulnerabilities, pentesting, and forensics.</p>
         </div>
         <button 
           onClick={() => setIsModalOpen(true)}
-          className="px-6 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-lg text-white font-medium hover:shadow-lg hover:shadow-emerald-500/25 transition-all text-sm flex items-center gap-2"
+          className="w-full sm:w-auto px-6 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-xl text-white font-medium hover:shadow-lg hover:shadow-emerald-500/25 transition-all text-sm flex items-center justify-center gap-2"
         >
           <Plus className="w-4 h-4" />
           New Report
@@ -54,7 +55,7 @@ export default function CyberForumPage() {
       </div>
 
       {/* Search & Filters */}
-      <div className="flex gap-4">
+      <div className="flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-emerald-500/50" />
           <input 

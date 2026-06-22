@@ -36,14 +36,14 @@ export default function DevForumPage() {
         onSuccess={loadPosts}
       />
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold text-white mb-2">Dev Forum</h1>
-          <p className="text-slate-400">Join the discussion, earn points, and solve code issues.</p>
+          <p className="text-slate-400 text-sm">Join the discussion, earn points, and solve code issues.</p>
         </div>
         <button 
           onClick={() => setIsModalOpen(true)}
-          className="px-6 py-2.5 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg text-white font-medium hover:shadow-lg hover:shadow-purple-500/25 transition-all text-sm flex items-center gap-2"
+          className="w-full sm:w-auto px-6 py-2.5 bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl text-white font-medium hover:shadow-lg hover:shadow-purple-500/25 transition-all text-sm flex items-center justify-center gap-2"
         >
           <Plus className="w-4 h-4" />
           New Post
@@ -51,7 +51,7 @@ export default function DevForumPage() {
       </div>
 
       {/* Search & Filters */}
-      <div className="flex gap-4">
+      <div className="flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
           <input 

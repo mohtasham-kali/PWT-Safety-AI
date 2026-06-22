@@ -11,6 +11,9 @@ export class Bot {
   @Column()
   type: 'general' | 'cyber';
 
+  @Column({ nullable: true })
+  category: string;
+
   @Column({ default: 'idle' })
   status: 'idle' | 'working' | 'completed';
 

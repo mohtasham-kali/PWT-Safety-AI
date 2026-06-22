@@ -35,7 +35,7 @@ export function PostCard({ id, title, author, timeAgo, preview, tags, likes: ini
   };
 
   const handleCardClick = () => {
-    router.push(`/forum/post/${id}`);
+    router.push(`/forum/post?id=${id}`);
   };
 
   return (
